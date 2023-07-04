@@ -9,6 +9,7 @@ namespace SeleniumExercise.Hooks
     public sealed class Hooks
     {
         private readonly IObjectContainer _container;
+        private IWebDriver _driver;
 
         public Hooks(IObjectContainer container)
         {
@@ -18,23 +19,21 @@ namespace SeleniumExercise.Hooks
         [BeforeScenario(Order = 1)]
         public void FirstBeforeScenario()
         {
-            IWebDriver driver = new ChromeDriver();
-            driver.Manage().Window.Maximize();
+            _driver = new ChromeDriver();
+            _driver.Manage().Window.Maximize();
 
-            driver.Navigate().GoToUrl("http://timvroom.com/selenium/playground/");
+            _driver.Navigate().GoToUrl("http://timvroom.com/selenium/playground/");
 
-            _container.RegisterInstanceAs<IWebDriver>(driver);
+            _container.RegisterInstanceAs<IWebDriver>(_driver);
         }
 
         [AfterScenario]
         public void AfterScenario()
         {
-            var driver = _container.Resolve<IWebDriver>();
-
-            if (driver != null)
+            if (_driver != null)
             {
-                driver.Quit();
-                driver.Dispose();
+                _driver.Quit();
+                _driver.Dispose();
             }
         }
     }
